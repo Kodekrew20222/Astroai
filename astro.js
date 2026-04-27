@@ -29,8 +29,17 @@ document.getElementById('start-chat').onclick = () => {
 
 // 2. The Chat Execution
 const sendMessage = async () => {
-    const text = questionInput.value.trim();
-    if (!text) return;
+    let text = questionInput.value.trim();
+
+// If regenerate, use last message
+if (!text && lastUserMessage) {
+    text = lastUserMessage;
+}
+
+if (!text) return;
+
+// Save last message
+lastUserMessage = text;
 
     const now = new Date();
     const formattedDateTime = now.toLocaleString("en-IN", {
@@ -105,11 +114,13 @@ const sendMessage = async () => {
     }
 };
 
+let lastUserMessage = "";
+
 // Regenerate
 const regenerateResponse = async () => {
-    if (chatHistory.length === 0) return;
+    if (!lastUserMessage) return;
 
-    // Remove last AI response
+    // Remove last AI response from chatHistory
     for (let i = chatHistory.length - 1; i >= 0; i--) {
         if (chatHistory[i].role === "model") {
             chatHistory.splice(i, 1);
@@ -123,7 +134,8 @@ const regenerateResponse = async () => {
         messages[messages.length - 1].remove();
     }
 
-    // Re-trigger API
+    // Trigger again WITHOUT needing input
+    questionInput.value = ""; // keep UI clean
     await sendMessage();
 };
 
