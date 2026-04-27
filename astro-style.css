@@ -127,7 +127,6 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 
 /* Floating Chat Layout */
 #chat-step {
-    
     top: 0;
     left: 0;
     width: 100%;
