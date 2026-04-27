@@ -596,7 +596,7 @@ h3.cart-title {
     height: 50px;
 }
 .navbar-nav .nav-item a.nav-link {
-    color: var(--accent-color);
+    color: #fff;
 }
 .navbar-nav .nav-item a.nav-link.active, 
 .navbar-nav .nav-item a.nav-link:focus, 

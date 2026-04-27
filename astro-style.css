@@ -1,5 +1,5 @@
 body {
-    background: #0f0f0f;
+    background-image: url('./new-img/Group\ 47547.png');
     color: #e0e0e0;
     font-family: 'Segoe UI', sans-serif;
     overflow-x: hidden;
@@ -8,7 +8,7 @@ body {
 .card {
     border: none;
     border-radius: 20px;
-    background: #1a1a1a;
+    background: #1a1a1a94;
     transition: all 0.5s ease;
 }
 
