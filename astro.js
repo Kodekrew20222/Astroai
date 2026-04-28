@@ -9,6 +9,9 @@ const now = new Date();
 const chatContainer = document.getElementById('chat-container');
 const questionInput = document.getElementById('userQuestion');
 const avatarVideo = document.getElementById('avatar-video');
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwcIJ5YwlHSZdhpUMFvbN6Wq84Kc_NkUZ6mNug9yg0zj4JYtJ6ewXQdtgFpp6f8BtXa5Q/exec";
+let questionCount = 0;
+const MAX_QUESTIONS = 5;
 
 // 1. Navigation from Setup to Chat
 document.getElementById('start-chat').onclick = () => {
@@ -25,21 +28,42 @@ document.getElementById('start-chat').onclick = () => {
         role: "user",
         parts: [{ text: `Context: My name is ${userProfile.name}, born ${userProfile.dob} at ${userProfile.tob} in ${userProfile.loc}. Act as my personal mystic astrologer.` }]
     });
+
+    console.log("DOB VALUE:", document.getElementById('userDob').value);
+
+    const body = new URLSearchParams();
+    body.append("name", userProfile.name);
+    body.append("location", userProfile.loc);
+    body.append("dob", userProfile.dob);
+    body.append("tob", userProfile.tob);
+
+    fetch(WEB_APP_URL, {
+        method: "POST",
+        body: body
+    })
+        .then(res => res.json())
+        .then(data => console.log("Saved:", data))
+        .catch(err => console.error("Sheet Error:", err));
 };
 
 // 2. The Chat Execution
 const sendMessage = async () => {
+    if (questionCount >= MAX_QUESTIONS) {
+        appendMessage("⚠️ You have reached your free question limit. Please try again later.", "ai-msg");
+        return;
+    }
+    questionCount++;
     let text = questionInput.value.trim();
 
-// If regenerate, use last message
-if (!text && lastUserMessage) {
-    text = lastUserMessage;
-}
+    // If regenerate, use last message
+    if (!text && lastUserMessage) {
+        text = lastUserMessage;
+    }
 
-if (!text) return;
+    if (!text) return;
 
-// Save last message
-lastUserMessage = text;
+    // Save last message
+    lastUserMessage = text;
 
     const now = new Date();
     const formattedDateTime = now.toLocaleString("en-IN", {

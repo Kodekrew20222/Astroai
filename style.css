@@ -113,6 +113,22 @@ a:hover {
     background: var(--light-blue-color);
 }
 
+/*------------ Fonts -----------*/
+@font-face {
+  font-family: 'MyCustomFont';
+  src: url('./fonts/AvenirNextCyr-Regular.ttf') format('truetype');
+}
+
+div, span, p, a, li, ol, ul, 
+h1, h2, h3, h4, h5, h6, 
+b, i, strong, em, small, 
+button, input, textarea, select, label, 
+section, article, aside, nav, main, footer, header, 
+details, summary, blockquote, q, cite,
+td, th, caption {
+    font-family: 'MyCustomFont';
+}
+
 /* - Section Padding
 --------------------------------------------------------------*/
 .padding-xsmall {
@@ -601,10 +617,18 @@ h3.cart-title {
 .navbar-nav .nav-item a.nav-link.active, 
 .navbar-nav .nav-item a.nav-link:focus, 
 .navbar-nav .nav-item a.nav-link:hover {
-    color: var(--primary-color);
+    color: #D6B25E;
 }
 
 /*------------ Offcanvas -------------- */
+.color-wt{
+  color: #FFF4E1;
+}
+
+.color-gd{
+  color: #D6B25E;
+}
+
 #header-nav .navbar-toggler:focus {
     box-shadow: none;
 }
