@@ -601,6 +601,10 @@ h3.cart-title {
 
 /* 1. Header
 /*----------------------------------------------*/
+.ban-head{
+  font-size: 3rem; 
+  text-transform: uppercase;
+}
 .site-header {
     position: fixed;
     width: 100%;
@@ -634,7 +638,7 @@ h3.cart-title {
 }
 #header-nav .offcanvas.show {
     z-index: 9999;
-    background-color: var(--light-blue-color);
+    background-color: #000;
 }
 #header-nav .offcanvas-end {
     width: 500px;
@@ -657,6 +661,12 @@ h3.cart-title {
 @media only screen and (max-width: 991px) {
   #navbar .user-items {
     display: none;
+  }
+  #chat-step{
+    height: 120vh;
+  }
+  #chat-container{
+    height: 300px;
   }
 }
 
@@ -1057,4 +1067,11 @@ figure.instagram-item img.insta-image {
 .post-navigation:hover svg,
 .post-navigation:focus svg {
     fill: var(--primary-color);
+}
+
+/*------------- media query --------------*/
+@media only screen and (max-width: 700px) {
+  .ban-head{
+    font-size: 2.3rem; 
+  }
 }
