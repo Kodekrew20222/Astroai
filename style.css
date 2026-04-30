@@ -96,7 +96,7 @@ a.light {
 }
 a:hover {
   text-decoration: none;
-  color: var(--primary-color);
+  color: #D6B25E;
 }
 
 /*------------ Background Color -----------*/
