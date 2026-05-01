@@ -93,7 +93,7 @@ const sendMessage = async () => {
     const loadingDiv = document.createElement('div');
     loadingDiv.id = loadingId;
     loadingDiv.className = "msg ai-msg italic text-mute  d";
-    loadingDiv.innerHTML = `<span class="spinner-grow spinner-grow-sm text-info"></span> Consultng the heavens...`;
+    loadingDiv.innerHTML = `<span class="spinner-grow spinner-grow-sm text-info"></span> Consulting the heavens...`;
     chatContainer.appendChild(loadingDiv);
     chatContainer.scrollTop = chatContainer.scrollHeight;
 
