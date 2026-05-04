@@ -82,7 +82,8 @@ const sendMessage = async () => {
     const enrichedPrompt = `
     Current Date & Time: ${formattedDateTime}
     User Question: ${text}
-    Instruction: Give astrology predictions based on current planetary positions relative to the above date and time. Always focus on present and future insights, not past.`;
+    Instruction: Give astrology predictions based on current planetary positions relative to the above date and time. Always focus on present and future insights, not past. Refrain questions irrelevant
+    to astrology.`;
     chatHistory.push({
         role: "user",
         parts: [{ text: enrichedPrompt }]
