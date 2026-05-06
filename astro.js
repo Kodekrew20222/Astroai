@@ -4,6 +4,9 @@
 let chatHistory = [];
 let isAutoSpeak = true;
 let userProfile = {};
+let isSpeaking = false;
+let isPaused = false;
+let currentUtterance = null;
 
 const now = new Date();
 const chatContainer = document.getElementById('chat-container');
@@ -15,21 +18,67 @@ const MAX_QUESTIONS = 5;
 
 // 1. Navigation from Setup to Chat
 document.getElementById('start-chat').onclick = () => {
+
+    const nameEl = document.getElementById('userName');
+    const locEl  = document.getElementById('userLoc');
+    const dobEl  = document.getElementById('userDob');
+    const tobEl  = document.getElementById('userTob');
+
+    // 🔁 Reset previous errors
+    [nameEl, locEl, dobEl, tobEl].forEach(el => el.classList.remove("is-invalid"));
+
+    let isValid = true;
+
+    // ✅ Field validations
+    if (!nameEl.value.trim()) {
+        nameEl.classList.add("is-invalid");
+        isValid = false;
+    }
+
+    if (!locEl.value.trim()) {
+        locEl.classList.add("is-invalid");
+        isValid = false;
+    }
+
+    if (!dobEl.value) {
+        dobEl.classList.add("is-invalid");
+        isValid = false;
+    }
+
+    if (!tobEl.value) {
+        tobEl.classList.add("is-invalid");
+        isValid = false;
+    }
+
+    // ✅ DOB future check
+    const today = new Date().toISOString().split("T")[0];
+    if (dobEl.value && dobEl.value > today) {
+        dobEl.classList.add("is-invalid");
+        isValid = false;
+    }
+
+    // ❌ Stop if invalid
+    if (!isValid) return;
+
+    // ✅ Continue flow
     userProfile = {
-        name: document.getElementById('userName').value || "Seeker",
-        loc: document.getElementById('userLoc').value,
-        dob: document.getElementById('userDob').value,
-        tob: document.getElementById('userTob').value
+        name: nameEl.value || "Seeker",
+        loc: locEl.value,
+        dob: dobEl.value,
+        tob: tobEl.value
     };
+
     document.getElementById('setup-step').classList.add('hidden');
     document.getElementById('chat-step').classList.remove('hidden');
 
     chatHistory.push({
         role: "user",
-        parts: [{ text: `Context: My name is ${userProfile.name}, born ${userProfile.dob} at ${userProfile.tob} in ${userProfile.loc}. Act as my personal mystic astrologer.` }]
+        parts: [{
+            text: `Context: My name is ${userProfile.name}, born ${userProfile.dob} at ${userProfile.tob} in ${userProfile.loc}. Act as my personal mystic astrologer.`
+        }]
     });
 
-    console.log("DOB VALUE:", document.getElementById('userDob').value);
+    console.log("DOB VALUE:", dobEl.value);
 
     const body = new URLSearchParams();
     body.append("name", userProfile.name);
@@ -207,31 +256,76 @@ function appendMessage(text, className) {
 }
 
 function speak(text) {
+    // Stop any previous speech
     window.speechSynthesis.cancel();
 
-    const msg = new SpeechSynthesisUtterance(text);
-    msg.rate = 0.9;
+    currentUtterance = new SpeechSynthesisUtterance(text);
+    currentUtterance.rate = 0.9;
 
-    // 🎥 Play speaking animation (you can later swap video)
+    isSpeaking = true;
+    isPaused = false;
+
+    // 🎥 Avatar animation
     if (avatarVideo) {
-        avatarVideo.playbackRate = 1;
         avatarVideo.currentTime = 0;
         avatarVideo.play();
     }
 
-    msg.onstart = () => {
-        if (avatarVideo) avatarVideo.play();
+    currentUtterance.onstart = () => {
+        isSpeaking = true;
     };
 
-    msg.onend = () => {
+    currentUtterance.onend = () => {
+        isSpeaking = false;
+        isPaused = false;
+
         if (avatarVideo) {
             avatarVideo.pause();
             avatarVideo.currentTime = 0;
         }
     };
 
-    window.speechSynthesis.speak(msg);
+    window.speechSynthesis.speak(currentUtterance);
 }
+
+const speakToggleBtn = document.getElementById('speak-toggle');
+
+speakToggleBtn.onclick = () => {
+
+    // 🔇 Turn OFF auto speak completely
+    if (isAutoSpeak && !isSpeaking) {
+        isAutoSpeak = false;
+        speakToggleBtn.innerText = "🔇 Auto-Speak: OFF";
+        return;
+    }
+
+    // 🔊 Turn ON auto speak
+    if (!isAutoSpeak && !isSpeaking) {
+        isAutoSpeak = true;
+        speakToggleBtn.innerText = "🔊 Auto-Speak: ON";
+        return;
+    }
+
+    // ⏸ Pause if speaking
+    if (isSpeaking && !isPaused) {
+        window.speechSynthesis.pause();
+        isPaused = true;
+        speakToggleBtn.innerText = "▶ Resume";
+        
+        if (avatarVideo) avatarVideo.pause();
+        return;
+    }
+
+    // ▶ Resume if paused
+    if (isPaused) {
+        window.speechSynthesis.resume();
+        isPaused = false;
+        speakToggleBtn.innerText = "⏸ Pause";
+
+        if (avatarVideo) avatarVideo.play();
+        return;
+    }
+};
 
 // Event Listeners
 document.getElementById('send-btn').onclick = sendMessage;

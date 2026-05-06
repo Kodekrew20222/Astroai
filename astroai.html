@@ -244,19 +244,22 @@
             <div class="row g-3">
                 <div class="col-md-6">
                     <label class="form-label">Full Name</label>
-                    <input type="text" id="userName" class="form-control" placeholder="John Doe">
+                    <input type="text" id="userName" class="form-control" placeholder="John Doe" name="user" required>
+                    <div class="invalid-feedback">Please enter your name</div>
                 </div>
                 <div class="col-md-6">
                     <label class="form-label">Birth City</label>
-                    <input type="text" id="userLoc" class="form-control" placeholder="Mumbai, India">
+                    <input type="text" id="userLoc" class="form-control" placeholder="Mumbai, India" name="city" required>
+                      <div class="invalid-feedback">Please enter your birth city</div>
                 </div>
                 <div class="col-md-6">
                     <label class="form-label">Date of Birth</label>
-                    <input type="date" id="userDob" class="form-control">
+                    <input type="date" id="userDob" class="form-control" name="dob" required><div class="invalid-feedback">Please select your date of birth</div>
                 </div>
                 <div class="col-md-6">
                     <label class="form-label">Time of Birth</label>
-                    <input type="time" id="userTob" class="form-control">
+                    <input type="time" id="userTob" class="form-control" name="tob" required>
+                    <div class="invalid-feedback">Please select your time of birth</div>
                 </div>
             </div>
 
