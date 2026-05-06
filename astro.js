@@ -1,6 +1,18 @@
 // const API_KEY = "";
 // const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${API_KEY}`;
 
+function isCasualMessage(text) {
+    const casualWords = [
+        "hi", "hello", "hey", "hii", "hlw",
+        "good morning", "good evening", "good afternoon",
+        "how are you", "what's up", "sup", "yo"
+    ];
+
+    const cleaned = text.toLowerCase().trim();
+
+    return casualWords.some(word => cleaned === word || cleaned.includes(word));
+}
+
 let chatHistory = [];
 let isAutoSpeak = true;
 let userProfile = {};
@@ -97,11 +109,12 @@ document.getElementById('start-chat').onclick = () => {
 
 // 2. The Chat Execution
 const sendMessage = async () => {
+
     if (questionCount >= MAX_QUESTIONS) {
         appendMessage("⚠️ You have reached your free question limit. Please try again later.", "ai-msg");
         return;
     }
-    questionCount++;
+
     let text = questionInput.value.trim();
 
     // If regenerate, use last message
@@ -111,8 +124,13 @@ const sendMessage = async () => {
 
     if (!text) return;
 
-    // Save last message
+    questionCount++;
     lastUserMessage = text;
+
+    // 🔇 Stop any ongoing speech before new request
+    window.speechSynthesis.cancel();
+    isSpeaking = false;
+    isPaused = false;
 
     const now = new Date();
     const formattedDateTime = now.toLocaleString("en-IN", {
@@ -125,24 +143,62 @@ const sendMessage = async () => {
         second: "2-digit"
     });
 
+    // 🧠 Detect casual message
+    const isCasualMessage = (msg) => {
+        const casualWords = [
+            "hi", "hello", "hey", "hii", "hlw",
+            "good morning", "good evening", "good afternoon",
+            "how are you", "what's up", "sup", "yo"
+        ];
+        const cleaned = msg.toLowerCase().trim();
+        return casualWords.some(word => cleaned === word || cleaned.includes(word));
+    };
+
+    let enrichedPrompt;
+
+    if (isCasualMessage(text)) {
+        // 💬 Casual mode
+        enrichedPrompt = `
+        Current Date & Time: ${formattedDateTime}
+
+        User Message: ${text}
+
+        Instruction:
+        You are a friendly astrologer assistant.
+        Respond casually, briefly and human-like.
+        DO NOT give astrology prediction unless user asks.
+        Keep response short (1-2 lines max).
+        Tone: warm, mystical, calm.
+        `;
+    } else {
+        // 🔮 Astrology mode
+        enrichedPrompt = `
+        Current Date & Time: ${formattedDateTime}
+
+        User Question: ${text}
+
+        Instruction:
+        Give astrology predictions based on current planetary positions.
+        Focus on present and future insights only.
+        Be mystical, insightful, and structured.
+        Avoid past-focused explanations unless necessary.
+        `;
+    }
+
     // Show User Message
     appendMessage(text, 'user-msg');
     questionInput.value = "";
-    const enrichedPrompt = `
-    Current Date & Time: ${formattedDateTime}
-    User Question: ${text}
-    Instruction: Give astrology predictions based on current planetary positions relative to the above date and time. Always focus on present and future insights, not past. Refrain questions irrelevant
-    to astrology.`;
+
     chatHistory.push({
         role: "user",
         parts: [{ text: enrichedPrompt }]
     });
 
-    // SHOW PROCESSING INDICATOR
+    // Loader
     const loadingId = "loader-" + Date.now();
     const loadingDiv = document.createElement('div');
     loadingDiv.id = loadingId;
-    loadingDiv.className = "msg ai-msg italic text-mute  d";
+    loadingDiv.className = "msg ai-msg italic text-mute";
     loadingDiv.innerHTML = `<span class="spinner-grow spinner-grow-sm text-info"></span> Consulting the heavens...`;
     chatContainer.appendChild(loadingDiv);
     chatContainer.scrollTop = chatContainer.scrollHeight;
@@ -162,7 +218,7 @@ const sendMessage = async () => {
         // Remove loader
         document.getElementById(loadingId).remove();
 
-        // ✅ HANDLE ERRORS (FIXES SILENT FAIL)
+        // Handle API errors
         if (data.error) {
             console.log("API ERROR:", data.error);
             appendMessage("⚠️ " + data.error.message, "ai-msg");
@@ -175,7 +231,9 @@ const sendMessage = async () => {
             appendMessage(aiText, 'ai-msg');
             chatHistory.push({ role: "model", parts: [{ text: aiText }] });
 
+            // 🔊 Speak if enabled
             if (isAutoSpeak) speak(aiText);
+
         } else {
             console.log("UNKNOWN RESPONSE:", data);
             appendMessage("⚠️ No response generated. Try again.", "ai-msg");
@@ -183,8 +241,11 @@ const sendMessage = async () => {
 
     } catch (err) {
         console.error("FETCH ERROR:", err);
-        document.getElementById(loadingId).innerHTML =
-            "⚠️ Connection lost. Try again.";
+
+        const loader = document.getElementById(loadingId);
+        if (loader) {
+            loader.innerHTML = "⚠️ Connection lost. Try again.";
+        }
     }
 };
 
