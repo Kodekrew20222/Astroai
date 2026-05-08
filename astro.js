@@ -168,7 +168,16 @@ const sendMessage = async () => {
         Respond casually, briefly and human-like.
         DO NOT give astrology prediction unless user asks.
         Keep response short (1-2 lines max).
-        Tone: warm, mystical, calm.
+        Tone:
+        Warm, mystical, calm and conversational.
+
+        IMPORTANT:
+        Always end with a small friendly follow-up question to continue the conversation.
+
+        Examples:
+        - "How may I guide you today?"
+        - "What would you like to know?"
+        - "Is there something specific troubling you lately?"
         `;
     } else {
         // 🔮 Astrology mode
@@ -195,7 +204,14 @@ const sendMessage = async () => {
 
         IMPORTANT:
         - Casual greetings like hi/hello should NOT receive astrology predictions
-        - But actual astrology questions should receive long, detailed and immersive responses
+        - Actual astrology questions should receive long, immersive responses
+        - ALWAYS end with a thoughtful follow-up question for further engagement
+
+        Example follow-ups:
+        - "Would you also like insight into your career energies?"
+        - "Should I look deeper into your relationship path?"
+        - "Would you like remedies or guidance for this phase?"
+        - "Do you want a month-wise prediction as well?"
         `;
     }
 
@@ -300,7 +316,7 @@ function appendMessage(text, className) {
     // ✅ Add actions ONLY for AI messages
     if (className === 'ai-msg') {
         const actions = document.createElement('div');
-        actions.className = "msg-actions mt-2";
+        actions.className = "msg-actions mt-2 d-none";
 
         actions.innerHTML = `
             <button class="btn btn-sm btn-outline-light like-btn">👍</button>
