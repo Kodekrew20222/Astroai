@@ -658,17 +658,7 @@ h3.cart-title {
     cursor: pointer;
 }
 
-@media only screen and (max-width: 991px) {
-  #navbar .user-items {
-    display: none;
-  }
-  #chat-step{
-    height: 120vh;
-  }
-  #chat-container{
-    height: 300px;
-  }
-}
+
 
 
 /* 2. Billboard
