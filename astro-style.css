@@ -130,14 +130,27 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 }
 
 /* Floating Chat Layout */
-#chat-step {
+/* #chat-step {
     top: 0;
     left: 0;
     width: 100%;
     height: 70vh;
     padding: 20px;
     z-index: 999;
+} */
+
+#chat-step {
+    width: 100%;
+    padding: 20px 0;
+    margin-top: 20px;
+    position: relative;
+    z-index: 1;
 }
+
+body {
+    padding-top: 90px;
+}
+
 
 @keyframes pulse {
     0% {

@@ -347,16 +347,24 @@ function appendMessage(text, className) {
 }
 
 function speak(text) {
-    // Stop any previous speech
+
+    // ✅ Stop old speech completely before new one
     window.speechSynthesis.cancel();
 
-    currentUtterance = new SpeechSynthesisUtterance(text);
-    currentUtterance.rate = 0.9;
-
-    isSpeaking = true;
+    // Reset states
+    isSpeaking = false;
     isPaused = false;
+    speakToggleBtn.innerText = isAutoSpeak
+    ? "🔊 Auto-Speak: ON"
+    : "🔇 Auto-Speak: OFF";
 
-    // 🎥 Avatar animation
+    currentUtterance = new SpeechSynthesisUtterance(text);
+
+    currentUtterance.rate = 0.9;
+    currentUtterance.pitch = 1;
+    currentUtterance.volume = 1;
+
+    // ▶ Start avatar animation
     if (avatarVideo) {
         avatarVideo.currentTime = 0;
         avatarVideo.play();
@@ -364,11 +372,28 @@ function speak(text) {
 
     currentUtterance.onstart = () => {
         isSpeaking = true;
+        isPaused = false;
+
+        speakToggleBtn.innerText = "⏸ Pause";
     };
 
     currentUtterance.onend = () => {
         isSpeaking = false;
         isPaused = false;
+
+        speakToggleBtn.innerText = "🔊 Auto-Speak: ON";
+
+        if (avatarVideo) {
+            avatarVideo.pause();
+            avatarVideo.currentTime = 0;
+        }
+    };
+
+    currentUtterance.onerror = () => {
+        isSpeaking = false;
+        isPaused = false;
+
+        speakToggleBtn.innerText = "🔊 Auto-Speak: ON";
 
         if (avatarVideo) {
             avatarVideo.pause();
@@ -383,39 +408,40 @@ const speakToggleBtn = document.getElementById('speak-toggle');
 
 speakToggleBtn.onclick = () => {
 
-    // 🔇 Turn OFF auto speak completely
-    if (isAutoSpeak && !isSpeaking) {
-        isAutoSpeak = false;
-        speakToggleBtn.innerText = "🔇 Auto-Speak: OFF";
-        return;
-    }
-
-    // 🔊 Turn ON auto speak
-    if (!isAutoSpeak && !isSpeaking) {
-        isAutoSpeak = true;
-        speakToggleBtn.innerText = "🔊 Auto-Speak: ON";
-        return;
-    }
-
-    // ⏸ Pause if speaking
+    // 🔇 If currently speaking → Pause
     if (isSpeaking && !isPaused) {
+
         window.speechSynthesis.pause();
+
         isPaused = true;
+
         speakToggleBtn.innerText = "▶ Resume";
-        
+
         if (avatarVideo) avatarVideo.pause();
+
         return;
     }
 
-    // ▶ Resume if paused
+    // ▶ Resume paused speech
     if (isPaused) {
+
         window.speechSynthesis.resume();
+
         isPaused = false;
+
         speakToggleBtn.innerText = "⏸ Pause";
 
         if (avatarVideo) avatarVideo.play();
+
         return;
     }
+
+    // 🔊 Toggle auto speak ON/OFF
+    isAutoSpeak = !isAutoSpeak;
+
+    speakToggleBtn.innerText = isAutoSpeak
+        ? "🔊 Auto-Speak: ON"
+        : "🔇 Auto-Speak: OFF";
 };
 
 // Event Listeners
