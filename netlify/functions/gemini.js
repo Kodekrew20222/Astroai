@@ -5,8 +5,6 @@ exports.handler = async function (event) {
         const body = JSON.parse(event.body);
         console.log("Incoming:", body);
 
-        console.log("API KEY:", process.env.GEMINI_API_KEY);
-
         const response = await fetch(
             `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${process.env.GEMINI_API_KEY}`,
             {

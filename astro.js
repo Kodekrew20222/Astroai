@@ -1,6 +1,8 @@
 // const API_KEY = "";
 // const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${API_KEY}`;
 
+let totalSessionTokens = 0;
+
 function isCasualMessage(text) {
     const casualWords = [
         "hi", "hello", "hey", "hii", "hlw",
@@ -253,6 +255,22 @@ const sendMessage = async () => {
             console.log("API ERROR:", data.error);
             appendMessage("⚠️ " + data.error.message, "ai-msg");
             return;
+        }
+
+        //token counting
+        if (data.usageMetadata) {
+            const promptTokens = data.usageMetadata.promptTokenCount || 0;
+            const candidatesTokens = data.usageMetadata.candidatesTokenCount || 0;
+            const currentTotal = data.usageMetadata.totalTokenCount || (promptTokens + candidatesTokens);
+
+            // Accumulate tokens for the entire session
+            totalSessionTokens += currentTotal;
+
+            console.log(`✨ --- TOKEN BREAKDOWN ---`);
+            console.log(`📥 Prompt Tokens (Input): ${promptTokens}`);
+            console.log(`📤 Candidate Tokens (Output): ${candidatesTokens}`);
+            console.log(`⚡ This Request Total: ${currentTotal}`);
+            console.log(`🌌 SESSION CUMULATIVE TOTAL: ${totalSessionTokens}`);
         }
 
         if (data.candidates && data.candidates.length > 0) {
